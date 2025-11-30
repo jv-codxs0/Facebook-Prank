@@ -11,38 +11,33 @@
         body {
             font-family: 'Inter', sans-serif;
             transition: background-color 0.3s;
+            overflow-x: hidden;
+            /* Extra space sa idalum para sa fixed bottom nav */
+            padding-bottom: 60px; 
         }
-        /* Body State for Login (Centered View) */
-        .body-login {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background-color: #f3f4f6; /* bg-gray-100 */
-        }
-        /* Body State for Profile (Scrolling View) */
-        .body-profile {
-            background-color: #f3f4f6; /* bg-gray-100 */
-        }
-
+        /* Custom Styles for FB Profile Look */
         .fb-header-banner {
             height: 200px;
-            background-color: white; 
             background-size: cover;
             background-position: center;
+            background-color: white; 
+        }
+        .profile-pic-container {
+            position: relative;
+            z-index: 10;
         }
         .profile-pic {
             width: 130px;
             height: 130px;
             border: 4px solid white; 
             object-fit: cover;
+            transition: transform 0.3s;
         }
+        /* FB Blue Color (Defined here) */
         .fb-blue { background-color: #1877f2; }
-        
-        /* SCENE HIDING: MAS RELIABLE NA DISPLAY NONE */
-        .view.hidden { display: none !important; }
+        .hover\:fb-blue:hover { background-color: #166fe5; }
 
-        /* SCENE HIDING: LOGIN SPINNER */
+        /* --- 1. LOGIN SPINNER & CHECKMARK --- */
         .login-spinner {
             border: 4px solid #f3f3f3; 
             border-top-color: #1877f2; 
@@ -51,20 +46,28 @@
             height: 35px;
             animation: spin 0.8s linear infinite;
         }
-        .success-icon { opacity: 0; }
-        .success-show { opacity: 1; }
+        .success-icon {
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .success-show {
+            opacity: 1;
+        }
 
-        /* PULL-TO-REFRESH SPINNER */
+        /* --- 2. PULL-TO-REFRESH SPINNER --- */
         .refresh-spinner {
             border: 3px solid #f3f3f3;
             border-top-color: #1877f2;
             border-radius: 50%;
             width: 24px;
             height: 24px;
-            transition: opacity 0.3s;
+            transition: opacity 0.3s, transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             opacity: 0;
+            transform: scale(0) rotate(0deg); 
         }
-        .refresh-active { animation: spin 0.8s linear infinite; }
+        .refresh-active {
+             animation: spin 0.8s linear infinite;
+        }
         
         .pull-refresh-indicator {
             position: fixed;
@@ -73,8 +76,32 @@
             transform: translate(-50%, -100%); 
             z-index: 100;
             padding: 15px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
             pointer-events: none; 
             transition: transform 0.3s; 
+        }
+
+        /* --- 3. BOTTOM NAV BAR --- */
+        #bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 55px;
+            border-top: 1px solid #ddd;
+            z-index: 50;
+        }
+        
+        /* --- 4. FADE-IN TRANSITION FOR PROFILE VIEW --- */
+        .fade-in {
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .fade-in-active {
+            opacity: 1;
         }
 
         @keyframes spin {
@@ -82,93 +109,93 @@
         }
     </style>
 </head>
-<!-- Initial state is body-login for centering -->
-<body class="body-login"> 
+<body class="bg-gray-100 dark:bg-gray-900 flex justify-center items-center min-h-screen">
 
-    <!-- PULL-TO-REFRESH INDICATOR -->
+    <!-- PULL-TO-REFRESH INDICATOR (Fixed at the top) -->
     <div id="pull-refresh-indicator" class="pull-refresh-indicator">
         <div id="refresh-spinner" class="refresh-spinner"></div>
     </div>
 
-    <!-- The app container will switch between max-w-md (login) and w-full (profile) -->
-    <div id="app-container" class="w-full max-w-md bg-white shadow-xl rounded-xl overflow-hidden transition-all duration-500">
+    <div id="app-container" class="w-full max-w-md bg-white dark:bg-gray-800 shadow-xl rounded-xl overflow-hidden transition-all duration-500">
         
         <!-- LOGIN VIEW (SCENE 1) -->
-        <div id="login-view" class="view active p-6" style="display: block;">
-            
-            <!-- ** NEW VERSION CONFIRMATION BANNER (V27 - Layout Fix) ** -->
-            <div class="bg-yellow-400 text-yellow-900 p-3 rounded-lg font-extrabold text-center mb-6 border-2 border-yellow-600">
-                ** V27 - Layout Fix **
-            </div>
-
+        <div id="login-view" class="view active p-6">
             <h1 class="text-4xl font-extrabold text-center text-fb-blue mb-8">facebook</h1>
             
             <form id="login-form" class="space-y-4">
-                <input id="username" type="text" placeholder="Username (hal. Achilles, Edward, ukon Jbm)" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-fb-blue focus:border-fb-blue" required>
-                <input id="password" type="password" placeholder="Password" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-fb-blue focus:border-fb-blue" required>
-                <button type="submit" class="w-full fb-blue text-white font-bold py-3 rounded-lg hover:bg-blue-600 transition duration-150">Log In</button>
+                <input id="username" type="text" placeholder="Username (hal. Achilles, Edward, ukon Jbm)" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-fb-blue focus:border-fb-blue dark:bg-gray-700 dark:border-gray-600 dark:text-white" required>
+                <input id="password" type="password" placeholder="Password" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-fb-blue focus:border-fb-blue dark:bg-gray-700 dark:border-gray-600 dark:text-white" required>
+                <button type="submit" class="w-full fb-blue text-white font-bold py-3 rounded-lg hover:fb-blue transition duration-150">Log In</button>
             </form>
             <p id="error-message" class="text-red-500 text-center mt-4 hidden text-sm">Indi husto ang Username ukon Password. Siguraduhon nga tama ang imo credentials.</p>
 
             <div class="text-center mt-6">
                 <a href="#" class="text-fb-blue text-sm hover:underline">Nalipatan ang password?</a>
-                <hr class="my-6 border-gray-200">
+                <hr class="my-6 border-gray-200 dark:border-gray-700">
                 <button class="bg-green-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-600 transition duration-150 text-sm">Maghimo Bag-o nga Account</button>
             </div>
         </div>
 
         <!-- PROFILE VIEW (SCENE 2/3) -->
-        <!-- Initially Hidden using inline style -->
-        <div id="profile-view" class="view hidden" style="display: none;">
+        <div id="profile-view" class="view hidden fade-in">
             <!-- Header (Banner & Profile Pic) -->
             <div id="profile-banner" class="fb-header-banner"></div>
 
-            <div class="p-4 profile-pic-container -mt-20">
+            <div class="p-4 sm:p-6 profile-pic-container -mt-20">
                 <div class="mx-auto w-fit">
                     <img id="profile-pic" src="" alt="Profile Picture" class="profile-pic rounded-full mx-auto object-cover">
                 </div>
                 
                 <!-- Name and Stats -->
-                <h2 id="profile-name" class="text-3xl font-extrabold text-center mt-3 text-gray-800"></h2>
+                <h2 id="profile-name" class="text-3xl sm:text-4xl font-extrabold text-center mt-3 text-gray-800 dark:text-white"></h2>
                 
                 <!-- Friends Stat -->
-                <div class="flex justify-center mt-2 mb-6 text-sm text-gray-500">
+                <div class="flex justify-center mt-2 mb-6 text-sm text-gray-500 dark:text-gray-400">
                     <p>
-                        <span id="friends-count" class="font-bold text-gray-800"></span> 
+                        <span id="friends-count" class="font-bold text-gray-800 dark:text-white"></span> 
                         kaibigan
                     </p>
                 </div>
 
                 <!-- Action Buttons -->
-                <div class="flex justify-center space-x-3 mb-8">
+                <div class="flex flex-col sm:flex-row justify-center space-y-2 sm:space-y-0 sm:space-x-3 mb-8">
+                    <!-- ADD TO STORY (Blue Button) -->
                     <button class="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-blue-700 transition duration-150">
                         <span class="text-sm">Idugang sa storya</span>
                     </button>
+                    <!-- EDIT PROFILE (Grey Button) -->
                     <button class="flex-1 bg-gray-200 text-gray-800 px-4 py-2 rounded-lg font-bold hover:bg-gray-300 transition duration-150">
                         <span class="text-sm">I-edit ang profile</span>
                     </button>
                 </div>
                 
                 <!-- Profile Intro/Bio -->
-                <div class="space-y-2 text-gray-700 border-t border-gray-200 pt-4 mb-6">
-                    <!-- Bio Content Here -->
-                    <div class="flex items-center text-sm"><svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15.75c-2.438 0-4.825-.668-6.83-1.745M12 21V3M18.5 21H5.5a2 2 2 01-2-2V5a2 2 0 012-2h13a2 2 0 012 2v14a2 2 0 01-2 2z"></path></svg>
+                <div class="space-y-2 text-gray-700 dark:text-gray-300 border-t border-gray-200 dark:border-gray-700 pt-4 mb-6">
+                    <div class="flex items-center text-sm">
+                        <!-- Icon: Briefcase -->
+                        <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15.75c-2.438 0-4.825-.668-6.83-1.745M12 21V3M18.5 21H5.5a2 2 0 01-2-2V5a2 2 0 012-2h13a2 2 0 012 2v14a2 2 0 01-2 2z"></path></svg>
                         <p><span class="font-semibold">Nagatrabaho</span> sa <span id="bio-work"></span></p>
                     </div>
-                    <div class="flex items-center text-sm"><svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zM12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    <div class="flex items-center text-sm">
+                        <!-- Icon: Graduation Cap -->
+                        <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zM12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                         <p><span class="font-semibold">Nagtuon</span> sa <span id="bio-study"></span></p>
                     </div>
-                    <div class="flex items-center text-sm"><svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                    <div class="flex items-center text-sm">
+                        <!-- Icon: Home -->
+                        <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
                         <p><span class="font-semibold">Naga-istar</span> sa <span id="bio-lives"></span></p>
                     </div>
-                    <div class="flex items-center text-sm"><svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                    <div class="flex items-center text-sm">
+                        <!-- Icon: Heart -->
+                        <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
                         <p><span class="font-semibold">Ginasundan sang</span> <span id="bio-followers"></span></p>
                     </div>
                 </div>
 
                 <!-- Navigation Tabs -->
-                <div class="border-t border-gray-200 pt-4">
-                    <div class="flex justify-around text-center text-sm font-semibold text-gray-600">
+                <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
+                    <div class="flex justify-around text-center text-sm font-semibold text-gray-600 dark:text-gray-400">
                         <button class="text-fb-blue border-b-2 border-fb-blue py-2">Posts</button>
                         <button class="hover:text-fb-blue py-2" onclick="showCustomAlert('Amo ni ang About Tab', 'Diri mo makita ang mas detalyado nga impormasyon parte sa profile.')">About</button>
                         <button class="hover:text-fb-blue py-2" onclick="showCustomAlert('Mga Laragway', 'Ang photo gallery subong indi available sa sini nga simulation.')">Photos</button>
@@ -181,7 +208,9 @@
                     <!-- Posts will be dynamically inserted here by JavaScript -->
                 </div>
                 
+                <!-- Extra padding for scrollability -->
                 <div class="h-10"></div>
+
 
                 <!-- Logout Button -->
                 <button onclick="logout()" class="w-full mt-6 mb-12 bg-red-600 text-white font-bold py-2 rounded-lg hover:bg-red-700 transition duration-150">
@@ -191,21 +220,23 @@
         </div>
     </div>
 
-    <!-- Fixed Bottom Navigation Bar -->
-    <!-- Positioned fixed at the bottom -->
-    <div id="bottom-nav" class="bg-white flex justify-around items-center shadow-2xl" style="position: fixed; bottom: 0; left: 0; right: 0; height: 55px; border-top: 1px solid #ddd; z-index: 50; display: none;">
+    <!-- Fixed Bottom Navigation Bar (with Ilonggo prank text) -->
+    <div id="bottom-nav" class="bg-white dark:bg-gray-800 flex justify-around items-center shadow-2xl hidden">
         <button class="flex flex-col items-center text-xs text-fb-blue">
             <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"></path></svg>
             Home
         </button>
+        <!-- PRANK TEXT: Friends (Ilonggo Slang) -->
         <button class="flex flex-col items-center text-xs text-gray-500 hover:text-fb-blue" onclick="showCustomAlert('Mga Amigo', 'Mos on to danay?')">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20v-2c0-.523-.086-1.03-.203-1.52c-.398-1.545-2.078-2.52-4.04-2.52h-2.115c-1.962 0-3.642.975-4.04 2.52A5.992 5.992 0 002 18v2h5l1 2zM12 11a4 4 0 100-8 4 4 0 000 8z"></path></svg>
             Friends
         </button>
+        <!-- PRANK TEXT: Notifications (Ilonggo Slang) -->
         <button class="flex flex-col items-center text-xs text-gray-500 hover:text-fb-blue" onclick="showCustomAlert('Mga Abiso', 'sakit itlog ko ba')">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.405L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
             Notif
         </button>
+        <!-- PRANK TEXT: Menu (Ilonggo Slang) -->
         <button class="flex flex-col items-center text-xs text-gray-500 hover:text-fb-blue" onclick="showCustomAlert('Menu sang App', 'Ako gali si jerwin ah naghimo sang FB ah nagahimo sang FB ah, lets go!')">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
             Menu
@@ -215,23 +246,29 @@
     <!-- LOADING DIALOG for Login -->
     <div id="loading-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden justify-center items-center z-50">
         <div class="bg-white p-5 rounded-xl shadow-2xl flex flex-col items-center">
+            
             <div id="spinner-container" class="relative w-10 h-10 flex justify-center items-center">
+                <!-- Login Spinner (Initially shown) -->
                 <div id="login-spinner" class="login-spinner absolute"></div> 
+                
+                <!-- Checkmark Icon (Initially hidden) -->
                 <svg id="success-check" class="success-icon w-10 h-10 text-green-500 absolute" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                 </svg>
             </div>
+
             <p id="loading-message" class="mt-3 text-gray-700 font-semibold text-sm">Naga-Log In...</p>
         </div>
     </div>
     
-    <!-- CUSTOM ALERT/MESSAGE BOX MODAL -->
+    <!-- CUSTOM ALERT/MESSAGE BOX MODAL (With fixed blue OK button) -->
     <div id="custom-alert-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden justify-center items-center z-[60]">
-        <div class="bg-white p-6 rounded-xl shadow-2xl w-11/12 max-w-sm">
+        <div class="bg-white p-6 rounded-xl shadow-2xl w-11/12 max-w-sm transform transition-transform duration-300 scale-100">
             <h3 id="custom-alert-title" class="text-xl font-bold mb-3 text-gray-800">Title</h3>
             <p id="custom-alert-content" class="text-gray-700 mb-6">Content</p>
             <div class="flex justify-end">
-                <button id="alert-ok-button" onclick="hideCustomAlert()" class="fb-blue text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-150 shadow-md">
+                <!-- The OK button calls hideCustomAlert which now handles the optional callback -->
+                <button onclick="hideCustomAlert()" class="fb-blue text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-150 shadow-md">
                     OK
                 </button>
             </div>
@@ -240,9 +277,10 @@
 
 
     <script>
+        // Global variable to hold the currently logged-in user's data
         let currentUser = null;
 
-        // Mga constant kag data
+        // Mga constant kag data (Naga-istar sa Bago City tanan)
         const COMMON_PROFILE_PIC = 'https://i.pinimg.com/474x/07/c4/72/07c4720d19a9e9edad9d0e939eca304a.jpg';
         const WHITE_BANNER = 'https://placehold.co/800x200/ffffff/ffffff?text=';
 
@@ -284,6 +322,25 @@
                     { time: '1d', content: 'ML ta pero akon na lang sia' }, 
                     { time: '3d', content: 'Kis-a, kinahanglan mo lang mag-break. Thank you, universe. 🙏' }
                 ]
+            },
+            'Jbm Maso': {
+                name: 'Jbm Maso',
+                username: 'Jbm',
+                password: 'Maso123',
+                pic: COMMON_PROFILE_PIC,
+                banner: WHITE_BANNER,
+                friendsCount: '1K',
+                bio: {
+                    work: 'Online Gamer',
+                    study: 'La Salle Bago City',
+                    lives: 'Bago City, Philippines', 
+                    followers: '500'
+                },
+                posts: [
+                    { time: '4 oras ang nagligad', content: 'Diin na kamo? Naga-hulat ko di ah. Bago City life is real!' },
+                    { time: '2d', content: 'Try ta mag ML, pabaklay na lang ako, Maso is life.' }, 
+                    { time: '5d', content: 'Kape + Ulan = Namit. Solid ang panahon sa Bago City.' }
+                ]
             }
         };
 
@@ -295,63 +352,81 @@
         const loadingModal = document.getElementById('loading-modal');
         const loginSpinner = document.getElementById('login-spinner'); 
         const successCheck = document.getElementById('success-check'); 
+        const friendsCountElement = document.getElementById('friends-count');
         const bottomNav = document.getElementById('bottom-nav'); 
         const postsContainer = document.getElementById('posts-container');
         const customAlertModal = document.getElementById('custom-alert-modal');
         const customAlertTitle = document.getElementById('custom-alert-title');
         const customAlertContent = document.getElementById('custom-alert-content');
-        const alertOkButton = document.getElementById('alert-ok-button');
-        
-        // Original function for hiding the alert
-        const originalHideCustomAlert = () => {
-            customAlertModal.classList.add('hidden');
-            customAlertModal.classList.remove('flex');
-        };
 
-        // --- MODAL/MESSAGE BOX LOGIC ---
 
-        window.showCustomAlert = function(title, content) {
+        // --- MODAL/MESSAGE BOX LOGIC (REPLACEMENT for alert()) ---
+
+        // Global variable para mag-hold sang callback function
+        let alertCallback = null; 
+
+        window.showCustomAlert = function(title, content, callback = null) {
             customAlertTitle.textContent = title;
             customAlertContent.textContent = content;
+            alertCallback = callback; // I-save ang callback
             customAlertModal.classList.remove('hidden');
             customAlertModal.classList.add('flex');
             console.log("ALERT SHOWN: " + title + " - " + content);
-            alertOkButton.onclick = originalHideCustomAlert; 
         }
 
-        window.hideCustomAlert = originalHideCustomAlert;
-        
+        window.hideCustomAlert = function() {
+            // I-check kag i-execute ang callback function bago magtago sang modal
+            if (alertCallback) {
+                alertCallback();
+                alertCallback = null; // I-clear ang callback
+            }
+            
+            customAlertModal.classList.add('hidden');
+            customAlertModal.classList.remove('flex');
+        }
+
 
         // --- POST RENDERING LOGIC ---
+
+        // Function to create an individual post element
         function createPostElement(post, user) {
             const postDiv = document.createElement('div');
-            postDiv.className = 'p-4 bg-white rounded-xl shadow-lg border border-gray-100';
+            postDiv.className = 'p-4 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700';
             postDiv.innerHTML = `
                 <div class="flex items-center mb-2">
                     <img src="${user.pic}" class="w-10 h-10 rounded-full mr-3 object-cover" alt="${user.name} Avatar">
                     <div>
-                        <p class="font-bold text-gray-800 text-sm">${user.name}</p>
+                        <p class="font-bold text-gray-800 dark:text-white text-sm">${user.name}</p>
                         <p class="text-xs text-gray-500">${post.time}</p>
                     </div>
                 </div>
-                <p class="text-gray-700 text-base">${post.content}</p>
-                <div class="flex justify-between text-xs text-gray-500 mt-3 border-t border-gray-100 py-2">
+                <p class="text-gray-700 dark:text-gray-300 text-base">${post.content}</p>
+                <div class="flex justify-between text-xs text-gray-500 mt-3 border-t border-gray-100 dark:border-gray-700 py-2">
                     <span>Mock Reactions</span>
                     <span>Mock Comments</span>
                 </div>
-                <div class="flex border-t border-gray-100 pt-2 -mx-2">
+                <!-- Reaction/Action Buttons added here -->
+                <div class="flex border-t border-gray-100 dark:border-gray-700 pt-2 -mx-2">
+                    <!-- React Button (UPDATED MESSAGE) -->
                     <button onclick="showCustomAlert('Indi Maka-React', 'Ma react ka? Ligo to danay daw buli ka haha')" 
                             class="flex-1 flex items-center justify-center p-2 text-gray-500 hover:text-fb-blue transition duration-150 rounded-lg">
+                        <!-- Icon for Like/React (Thumbs Up) -->
                         <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.325-.01-.485-.034l-3.374-4.218A1 1 0 016 15.222V10h11.232a2 2 0 00.957-.282L21 8"></path></svg>
                         <span class="text-sm font-semibold">React</span>
                     </button>
+
+                    <!-- Comment Button (UPDATED MESSAGE) -->
                     <button onclick="showCustomAlert('Indi Maka-Komento', 'ma comment ka? Ligo to danay sa lamawan hahaha')"
                             class="flex-1 flex items-center justify-center p-2 text-gray-500 hover:text-fb-blue transition duration-150 rounded-lg">
+                        <!-- Icon for Comment -->
                         <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.714-4.03 8.5-9 8.5S3 16.714 3 12 7.03 3.5 12 3.5s9 3.786 9 8.5z"></path></svg>
                         <span class="text-sm font-semibold">Komento</span>
                     </button>
+                    
+                    <!-- Share Button (UPDATED MESSAGE) -->
                     <button onclick="showCustomAlert('Indi Maka-Share', 'Ma share ka? Sorry kung ma share ka tol kay way di share nag lupad')"
                             class="flex-1 flex items-center justify-center p-2 text-gray-500 hover:text-fb-blue transition duration-150 rounded-lg">
+                        <!-- Icon for Share -->
                         <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 100-6 3 3 0 000 6z"></path></svg>
                         <span class="text-sm font-semibold">I-Share</span>
                     </button>
@@ -360,56 +435,56 @@
             return postDiv;
         }
 
+        // Function to render all posts for the current user
         function renderPosts(user) {
-            postsContainer.innerHTML = ''; 
+            postsContainer.innerHTML = ''; // Clear existing posts
             user.posts.forEach(post => {
                 postsContainer.appendChild(createPostElement(post, user));
             });
         }
 
 
-        // --- BULLETPROOF SCENE SWITCHING LOGIC (V27 FIX) ---
+        // --- SCENE SWITCHING AND PROFILE RENDERING ---
 
+        // Function para magpalit sang view (Scene Switching)
         function switchView(fromView, toView) {
-            // Itago ang fromView
-            fromView.style.display = 'none'; 
+            fromView.classList.add('hidden');
+            fromView.classList.remove('active');
             
-            // Ipakita ang toView
-            toView.style.display = 'block'; 
+            toView.classList.remove('hidden');
+            toView.classList.add('active');
+
+            // Apply fade-in effect only when switching to profile view
+            if (toView.id === 'profile-view') {
+                toView.classList.remove('fade-in-active'); 
+                
+                // Trigger the fade-in transition
+                setTimeout(() => toView.classList.add('fade-in-active'), 50);
+            } else {
+                // If switching away from profile, remove active fade class for next time
+                 toView.classList.remove('fade-in-active');
+            }
             
             const appContainer = document.getElementById('app-container');
-            const body = document.body;
-
             if (toView.id === 'profile-view') {
-                // 1. I-configure ang BODY para sa Profile (Scrolling)
-                body.classList.remove('body-login');
-                body.classList.add('body-profile');
-                
-                // 2. I-configure ang App Container para sa Profile (Full width)
-                appContainer.classList.remove('max-w-md', 'rounded-xl', 'shadow-xl'); // Remove centering constraints
-                appContainer.classList.add('w-full', 'shadow-none'); // Full width and height
-
-                // Ipakita ang bottom nav
-                bottomNav.style.display = 'flex'; 
-                window.scrollTo(0, 0); // Siguraduhin na nasa taas ang scroll
-                console.log("VIEW SWITCH: Profile View Activated (w-full layout)");
+                appContainer.classList.remove('max-w-md');
+                appContainer.classList.add('max-w-xl');
+                document.body.classList.remove('items-center');
+                document.body.classList.add('items-start');
+                bottomNav.classList.remove('hidden'); // Ipakita ang bottom nav
+                window.scrollTo(0, 0); 
             } else {
-                // 1. I-configure ang BODY para sa Login (Centered)
-                body.classList.add('body-login');
-                body.classList.remove('body-profile');
-                
-                // 2. I-configure ang App Container para sa Login (Centered box)
-                appContainer.classList.add('max-w-md', 'rounded-xl', 'shadow-xl'); 
-                appContainer.classList.remove('w-full', 'shadow-none');
-
-                // Itago ang bottom nav
-                bottomNav.style.display = 'none'; 
-                console.log("VIEW SWITCH: Login View Activated (max-w-md layout)");
+                appContainer.classList.add('max-w-md');
+                appContainer.classList.remove('max-w-xl');
+                document.body.classList.add('items-center');
+                document.body.classList.remove('items-start');
+                bottomNav.classList.add('hidden'); // Itago ang bottom nav
             }
         }
 
+        // Function para i-display ang profile details
         function renderProfile(user) {
-            currentUser = user; 
+            currentUser = user; // Store current user globally
             
             document.getElementById('profile-name').textContent = user.name;
             document.getElementById('profile-pic').src = user.pic;
@@ -418,7 +493,9 @@
             bannerElement.style.backgroundImage = `url('${user.banner}')`;
             bannerElement.style.backgroundColor = 'white';
 
-            document.getElementById('friends-count').textContent = user.friendsCount;
+            if (friendsCountElement) {
+                friendsCountElement.textContent = user.friendsCount;
+            }
 
             // Render Bio/Intro Details
             document.getElementById('bio-work').textContent = `**${user.bio.work}**`;
@@ -426,10 +503,10 @@
             document.getElementById('bio-lives').textContent = `**${user.bio.lives}**`;
             document.getElementById('bio-followers').textContent = `**${user.bio.followers} katawo**`;
 
-            renderPosts(user);
+            renderPosts(user); // Call the function to render posts
         }
 
-        // --- PULL-TO-REFRESH LOGIC (Same as V26) ---
+        // --- PULL-TO-REFRESH LOGIC (Untouched, still works on mobile) ---
 
         const refreshIndicator = document.getElementById('pull-refresh-indicator');
         const refreshSpinner = document.getElementById('refresh-spinner');
@@ -439,7 +516,8 @@
         let isDragging = false;
 
         function handleTouchStart(e) {
-            if (profileView.style.display === 'block' && window.scrollY === 0 && !isRefreshing) {
+            // Check kung sa profile view, sa pinakatuktok sang scroll, kag wala pa naga-refresh
+            if (profileView.classList.contains('active') && window.scrollY === 0 && !isRefreshing) {
                 startY = e.touches[0].clientY;
                 isDragging = true;
             } else {
@@ -449,7 +527,7 @@
         }
 
         function handleTouchMove(e) {
-            if (!isDragging || isRefreshing || profileView.style.display !== 'block') return;
+            if (!isDragging || isRefreshing || !profileView.classList.contains('active')) return;
 
             const currentY = e.touches[0].clientY;
             const pullDistance = currentY - startY;
@@ -458,7 +536,9 @@
                 e.preventDefault(); 
                 
                 const limitedPull = Math.min(pullDistance, REFRESH_THRESHOLD * 1.5);
+
                 refreshIndicator.style.transform = `translate(-50%, ${limitedPull}px)`;
+                
                 refreshSpinner.style.opacity = '1';
                 
                 const scale = Math.min(1, limitedPull / REFRESH_THRESHOLD);
@@ -479,8 +559,8 @@
                 startRefresh();
             } else {
                 refreshIndicator.style.transform = `translate(-50%, -100%)`;
-                refreshSpinner.style.opacity = '0';
                 refreshSpinner.style.transform = `scale(0) rotate(0deg)`;
+                refreshSpinner.style.opacity = '0';
             }
         }
 
@@ -505,6 +585,7 @@
             refreshSpinner.style.opacity = '0'; 
             refreshSpinner.style.transform = `scale(0) rotate(0deg)`;
             
+            // Simulate content refresh by re-rendering posts
             if (currentUser) {
                 renderPosts(currentUser); 
             }
@@ -515,16 +596,16 @@
         window.addEventListener('touchend', handleTouchEnd);
 
 
-        // --- LOGIN LOGIC ---
+        // --- LOGIN LOGIC (With CLEANER Callback for Confirmation) ---
         loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            console.log("LOGIN ATTEMPT STARTED."); 
+            console.log("LOGIN ATTEMPT STARTED."); // Log 1
 
             const inputUsername = document.getElementById('username').value.trim();
             const inputPassword = document.getElementById('password').value;
             let targetUser = null;
             
-            errorMessage.classList.add('hidden'); 
+            errorMessage.classList.add('hidden'); // Ensure error message is hidden initially
 
             loginSpinner.classList.remove('hidden');
             successCheck.classList.remove('success-show');
@@ -533,52 +614,69 @@
             loadingModal.classList.add('flex');
             document.getElementById('loading-message').textContent = 'Naga-Log In...';
 
-            for (const key in USERS) {
-                const user = USERS[key];
-                const shortName = user.username;
-                if ((shortName === inputUsername || user.name.toLowerCase().startsWith(inputUsername.toLowerCase())) && user.password === inputPassword) {
-                    targetUser = user;
-                    break;
-                }
-            }
-
+            // Stage 1 Delay: Simulate Initial Connection (1.5 seconds)
             setTimeout(() => {
-                if (targetUser) {
-                    console.log("VALIDATION SUCCESSFUL for user:", targetUser.name);
+                
+                document.getElementById('loading-message').textContent = 'Naga-check sang credentials...';
+                
+                // Stage 2 Delay: Simulate Checking (0.5 seconds)
+                setTimeout(() => {
 
-                    // SUCCESS Confirmation (Checkmark)
-                    loginSpinner.classList.add('hidden');
-                    successCheck.classList.add('success-show');
-                    document.getElementById('loading-message').textContent = 'Successful!';
+                    // Validation Logic
+                    for (const key in USERS) {
+                        const user = USERS[key];
+                        const shortName = user.username;
+                        
+                        // Check if username/name matches and password is correct
+                        if ((shortName === inputUsername || user.name.toLowerCase().startsWith(inputUsername.toLowerCase())) && user.password === inputPassword) {
+                            targetUser = user;
+                            break;
+                        }
+                    }
 
-                    const proceedToProfile = () => {
-                        originalHideCustomAlert(); // Close the modal
-                        renderProfile(targetUser);
-                        switchView(loginView, profileView); 
-                        console.log("VIEW SWITCH COMPLETED.");
-                        // Reset spinner for next login
-                        loginSpinner.classList.remove('hidden');
-                        successCheck.classList.remove('success-show');
-                    };
-                    
-                    // Assign the proceeding logic to the OK button
-                    window.showCustomAlert('LOGIN SUCCESS!', `Welcome back, ${targetUser.name}! Paki-click ang OK para makita ang Profile.`); 
-                    document.getElementById('alert-ok-button').onclick = proceedToProfile;
-                    
-                    // Hide the loading spinner after showing the success modal
-                    setTimeout(() => {
+                    // Results
+                    if (targetUser) {
+                        console.log("VALIDATION SUCCESSFUL for user:", targetUser.name); // Log 2
+
+                        // Stage 3: SUCCESS Confirmation (Checkmark)
+                        loginSpinner.classList.add('hidden');
+                        successCheck.classList.add('success-show');
+                        document.getElementById('loading-message').textContent = 'Successful!';
+
+                        // Define the callback function for switching views
+                        const switchToProfile = () => {
+                            renderProfile(targetUser);
+                            switchView(loginView, profileView); 
+                            console.log("VIEW SWITCH COMPLETED."); // Log 3
+                        };
+
+                        // Brief delay to show the checkmark, then show the alert with the callback
+                        setTimeout(() => {
+                            loadingModal.classList.add('hidden');
+                            loadingModal.classList.remove('flex');
+
+                            // Show modal, and pass the scene switching function as the callback
+                            showCustomAlert(
+                                'LOGIN SUCCESS!', 
+                                `Welcome back, ${targetUser.name}! Paki-click ang OK para makita ang Profile.`,
+                                switchToProfile // <-- This is the callback
+                            ); 
+                            
+                            loginSpinner.classList.remove('hidden');
+                            successCheck.classList.remove('success-show');
+                        }, 500); 
+
+                    } else {
+                        // Failure path
+                        console.log("LOGIN FAILED: Invalid credentials."); // Log 4
                         loadingModal.classList.add('hidden');
                         loadingModal.classList.remove('flex');
-                    }, 500);
+                        errorMessage.classList.remove('hidden');
+                        loginSpinner.classList.remove('hidden');
+                    }
+                }, 500); // 0.5 seconds delay for checking
 
-                } else {
-                    // Failure path
-                    console.log("LOGIN FAILED: Invalid credentials.");
-                    loadingModal.classList.add('hidden');
-                    loadingModal.classList.remove('flex');
-                    errorMessage.classList.remove('hidden');
-                }
-            }, 1000); // 1 second total delay
+            }, 1500); // 1.5 seconds delay for initial login
         });
 
         // Logout Function
@@ -586,6 +684,8 @@
             loginForm.reset();
             currentUser = null;
             endRefresh(); 
+            // When logging out, switch back to login view without fade
+            profileView.classList.remove('fade-in-active'); 
             switchView(profileView, loginView);
         }
 
